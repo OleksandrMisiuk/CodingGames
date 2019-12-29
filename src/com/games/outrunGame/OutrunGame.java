@@ -2,8 +2,12 @@ package com.games.outrunGame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimerTask;
 
 public class OutrunGame extends JPanel {
 
@@ -11,10 +15,26 @@ public class OutrunGame extends JPanel {
     private int roadW = 2000, segL = 200;
     private float camD = 0.84f;
     private List<Line> lines = new ArrayList<>();
+    private int position = 1;
 
     public OutrunGame() {
         init();
-        repaint();
+
+        this.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                super.keyPressed(e);
+                if(e.getKeyCode()==KeyEvent.VK_W) position+=200;
+                if(e.getKeyCode()==KeyEvent.VK_S) position-=200;
+            }
+        });
+
+        new java.util.Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                repaint();
+            }
+        } ,100, 1000/40);
     }
 
     private void init(){
@@ -39,15 +59,16 @@ public class OutrunGame extends JPanel {
     }
 
     private void drawRoad(Graphics2D g2d){
-        for(int n = 1; n<300; n++){
+        int startPos = position/segL;
+        for(int n = startPos; n<startPos+300; n++){
             Line l = lines.get(n);
-            l.project(0,1500,0,camD,WIDTH,HEIGHT,roadW);
+            l.project(0,1500,position,camD,WIDTH,HEIGHT,roadW);
 
             Color grass  = (n/3)%2==0?new Color(16,200,16):new Color(0,154,0);
             Color rumble = (n/3)%2==0?new Color(255,255,255):new Color(0,0,0);
             Color road   = (n/3)%2==0?new Color(107,107,107):new Color(105,105,105);
 
-            Line p = lines.get((n-1)); //previous line
+            Line p = lines.get(Math.abs(n-1)); //previous line
 
 //            drawQuad(g2d, grass, 0, (int)p.getYb(), WIDTH, 0, (int)l.getYb(), WIDTH);
 //            drawQuad(g2d, rumble, (int)p.getXb(), (int)p.getYb(), (int)(p.W*1.2f), (int)l.getXb(), (int)l.getYb(), (int)(l.W*1.2f));
@@ -67,11 +88,15 @@ public class OutrunGame extends JPanel {
 
     public static void main(String ... strings){
         JFrame frame = new JFrame("Outrun Game");
+        JPanel panel = new OutrunGame();
+        panel.setFocusable(true);
+
         frame.setSize(WIDTH,HEIGHT);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
 
-        frame.add(new OutrunGame());
+        frame.add(panel);
         frame.setVisible(true);
+        panel.requestFocusInWindow();
     }
 }
