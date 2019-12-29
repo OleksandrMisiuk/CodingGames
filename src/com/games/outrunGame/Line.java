@@ -2,13 +2,14 @@ package com.games.outrunGame;
 
 public class Line {
     float x, y, z;
-    float Xb, Yb, W;
+    float Xb, Yb, W, curve;
     float scale;
 
     public Line() {
         x = 0f;
         y = 0f;
         z = 0f;
+        curve = 0f;
     }
 
     public Line(float x, float y, float z, float x1, float y1, float w, float scale) {
@@ -26,6 +27,14 @@ public class Line {
         Xb = (1 + scale*(x - camX)) * width/2;
         Yb = (1 - scale*(y - camY)) * height/2;
         W = scale * roadW  * width/2;
+    }
+
+    public float getCurve() {
+        return curve;
+    }
+
+    public void setCurve(float curve) {
+        this.curve = curve;
     }
 
     public float getX() {
