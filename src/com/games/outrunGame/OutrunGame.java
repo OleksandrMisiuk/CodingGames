@@ -1,12 +1,13 @@
 package com.games.outrunGame;
 
+import com.games.utils.Picture;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.TimerTask;
 
 public class OutrunGame extends JPanel {
@@ -58,10 +59,6 @@ public class OutrunGame extends JPanel {
         drawRoad(g2d);
 
         g2d.setColor(Color.BLACK);
-//        g2d.fillRect(0, 0, WIDTH, HEIGHT / 2 + 8);
-
-//        g2d.clearRect(0,0,WIDTH, HEIGHT/2);
-
     }
 
     private void drawRoad(Graphics2D g2d) {
@@ -80,9 +77,6 @@ public class OutrunGame extends JPanel {
 
             Line p = lines.get(Math.abs(n - 1)); //previous line
 
-//            drawQuad(g2d, grass, 0, (int)p.getYb(), WIDTH, 0, (int)l.getYb(), WIDTH);
-//            drawQuad(g2d, rumble, (int)p.getXb(), (int)p.getYb(), (int)(p.W*1.2f), (int)l.getXb(), (int)l.getYb(), (int)(l.W*1.2f));
-//            drawQuad(g2d, road,  (int)p.getXb(), (int)p.getYb(), (int)p.getW(), (int)l.getXb(), (int)l.getYb(), (int)l.getW());
 
             drawQuad(g2d, grass, 0, Math.round(p.getYb()), WIDTH, 0, Math.round(l.getYb()), WIDTH);
             drawQuad(g2d, rumble, Math.round(p.getXb()), Math.round(p.getYb()), Math.round((p.W * 1.2f)), Math.round(l.getXb()), Math.round(l.getYb()), Math.round((l.W * 1.2f)));
@@ -103,7 +97,6 @@ public class OutrunGame extends JPanel {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Picture.draw(g, "C:/Developing/CodingMath/resources/bg.png", 0, 0 , OutrunGame.WIDTH, OutrunGame.HEIGHT/2);
-//                g.fillRect(0, 0, WIDTH, HEIGHT + 8);
             }
         };
         bg.setPreferredSize(new Dimension(WIDTH, HEIGHT/2+8));

@@ -1,4 +1,4 @@
-package com.games.outrunGame;
+package com.games.utils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
