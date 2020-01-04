@@ -24,6 +24,8 @@ public class BejeweledGame extends JPanel {
 
     private Point pos = new Point();
     private int x0, y0, x, y, click;
+    private boolean isSwap = false, isMoving = false;
+
 
     public BejeweledGame() {
         super();
@@ -35,21 +37,66 @@ public class BejeweledGame extends JPanel {
             public void run() {
                 repaint();
                 piecesMove();
+                noMatch();
+                matchFinding();
+                updateGrid();
             }
-        }, 100, 1000 / 40);
-
+        }, 300, 1000 / 40);
 
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    click++;
+                    if (!isSwap && !isMoving) click++;
                     pos.setLocation(e.getX() - offset.getX(), e.getY() - offset.getY());
                     System.out.println(pos);
                 }
             }
         });
+    }
+
+    private void matchFinding() {
+        for (int i = 1; i <= 8; i++)
+            for (int j = 1; j <= 8; j++) {
+                if (grid[i][j].getKind() == grid[i + 1][j].getKind())
+                    if (grid[i][j].getKind() == grid[i - 1][j].getKind())
+                        for (int n = -1; n <= 1; n++) grid[i + n][j].setMatch(grid[i + n][j].getMatch() + 1);
+
+                if (grid[i][j].getKind() == grid[i][j + 1].getKind())
+                    if (grid[i][j].getKind() == grid[i][j - 1].getKind())
+                        for (int n = -1; n <= 1; n++) grid[i][j + n].setMatch(grid[i][j + n].getMatch() + 1);
+            }
+    }
+
+    private void noMatch() {
+        if (isSwap && !isMoving) {
+            swapPieces(grid[y0][x0], grid[y][x]);
+            isSwap = false;
+        }
+    }
+
+    private void updateGrid() {
+        if (!isMoving) {
+            for (int i = 8; i > 0; i--)
+                for (int j = 1; j <= 8; j++)
+                    if (grid[i][j].getMatch() != 0)
+                        for (int n = i; n > 0; n--)
+                            if (grid[n][j].getMatch() == 0) {
+                                swapPieces(grid[n][j], grid[i][j]);
+                                break;
+                            }
+
+
+            for (int j = 1; j <= 8; j++)
+                for (int i = 8, n = 0; i > 0; i--)
+                    if (grid[i][j].getMatch() != 0) {
+                        grid[i][j].setKind(random.nextInt(1000) % 7);
+                        grid[i][j].setY(-ts * n++);
+                        grid[i][j].setMatch(0);
+                    }
+        }
+
     }
 
     private void piecesMove() {
@@ -64,10 +111,11 @@ public class BejeweledGame extends JPanel {
             if (Math.abs(x - x0) + Math.abs(y - y0) == 1) {
                 swapPieces(grid[y0][x0], grid[y][x]);
                 click = 0;
+                isSwap = false;
             } else click = 1;
         }
 
-
+        isMoving = false;
         for (int i = 1; i <= 8; i++)
             for (int j = 1; j <= 8; j++) {
                 Piece p = grid[i][j];
@@ -78,9 +126,9 @@ public class BejeweledGame extends JPanel {
                     dy = p.getY() - p.getRow() * ts;
                     if (dx != 0) p.setX(p.getX() - dx / Math.abs(dx));
                     if (dy != 0) p.setY(p.getY() - dy / Math.abs(dy));
+                    if (dx != 0 || dy != 0) isMoving = true;
                 }
             }
-
     }
 
     @Override
@@ -93,8 +141,8 @@ public class BejeweledGame extends JPanel {
     }
 
     private void initGrid() {
-        for (int i = 1; i <= 8; i++) {
-            for (int j = 1; j <= 8; j++) {
+        for (int i = 0; i <= 9; i++) {
+            for (int j = 0; j <= 9; j++) {
                 grid[i][j] = new Piece();
                 grid[i][j].setKind(random.nextInt(1000) % 7);
                 grid[i][j].setCol(j);
