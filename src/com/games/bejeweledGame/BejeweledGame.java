@@ -30,18 +30,29 @@ public class BejeweledGame extends JPanel {
         super.paint(g);
 
         Graphics2D g2d = (Graphics2D) g;
-        g2d.drawImage(background, 0 , 0, null);
+        g2d.drawImage(background, 0, 0, null);
+        drawPieces(g2d);
     }
 
-    private void initGrid(){
-        for(int i = 1; i<8; i++){
-            for(int j = 1; j<8; j++){
+    private void initGrid() {
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
                 grid[i][j] = new Piece();
-                grid[i][j].setKind(random.nextInt()%7);
+                grid[i][j].setKind(random.nextInt(1000) % 7);
                 grid[i][j].setCol(j);
                 grid[i][j].setRow(i);
-                grid[i][j].setX(j*ts);
-                grid[i][j].setY(i*ts);
+                grid[i][j].setX(j * ts);
+                grid[i][j].setY(i * ts);
+            }
+        }
+    }
+
+    private void drawPieces(Graphics2D g2d) {
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                Piece p = grid[i][j];
+                BufferedImage gem = gems.getSubimage(p.getKind() * 49, 0, 49, 49);
+                g2d.drawImage(gem, (int) (p.getX() + offset.getX() - ts), (int) (p.getY() + offset.getY() - ts), null);
             }
         }
     }
